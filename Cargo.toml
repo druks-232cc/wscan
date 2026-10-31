@@ -1,0 +1,42 @@
+[package]
+name = "wscan"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+
+[dependencies]
+aho-corasick = "1.1.5"
+anyhow = "1.0.104"
+clap = { version = "4.6.7", features = ["derive", "env"] }
+crossbeam-channel = "0.5.17"
+ctrlc = { version = "3.5.2", features = ["termination"] }
+elliptic-curve = { version = "0.14", default-features = false, features = ["sec1", "alloc"] }
+indicatif = "0.18.6"
+k256 = { version = "0.14.0", default-features = false, features = ["arithmetic"] }
+libc = "0.2.191"
+memchr = "2.8.3"
+regex-automata = "0.4.18"
+ripemd = "0.2.0"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+sha2 = "0.11.1"
+
+[dev-dependencies]
+criterion = "0.8.2"
+regex-syntax = "0.8"
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+
+[[bench]]
+name = "scan"
+harness = false
+
+# Small, fully static binary:
+#   cargo build --profile dist --target x86_64-unknown-linux-musl
+[profile.dist]
+inherits = "release"
+strip = true
+opt-level = "s"   # same scan speed (Teddy is hand-written SIMD), ~17% smaller
